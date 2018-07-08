@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="OFF">
+	<Properties>
+		<Property name="PID">????</Property>
+		<Property name="LOG_EXCEPTION_CONVERSION_WORD">%xwEx</Property>
+		<Property name="LOG_LEVEL_PATTERN">%5p</Property>
+		<Property name="LOG_DATEFORMAT_PATTERN">yyyy-MM-dd HH:mm:ss</Property>
+		<Property name="CONSOLE_LOG_PATTERN">%clr{%d{${LOG_DATEFORMAT_PATTERN}}}{faint} %clr{${LOG_LEVEL_PATTERN}} %clr{${sys:PID}}{magenta} %clr{---}{faint} %clr{[%15.15t]}{faint} %clr{%-40.40c{1.}}{cyan} %clr{:}{faint} %m%n${sys:LOG_EXCEPTION_CONVERSION_WORD}</Property>
+		<Property name="FILE_LOG_PATTERN">%d{${LOG_DATEFORMAT_PATTERN}} ${LOG_LEVEL_PATTERN} ${sys:PID} --- [%t] %-40.40c{1.} : %m%n${sys:LOG_EXCEPTION_CONVERSION_WORD}</Property>
+	</Properties>
+	
+	
+	<Appenders>
+		<Console name="Console" target="SYSTEM_OUT" follow="true"> 
+			<PatternLayout pattern="${sys:CONSOLE_LOG_PATTERN}" />
+		</Console>
+		<!-- 这个会打印出所有的info及以下级别的信息，每次大小超过size，则这size大小的日志会自动存入按年份-月份建立的文件夹下面并进行压缩，作为存档 -->
+
+		<RollingFile name="RollingFileInfo" fileName="D://logs//info2.log"
+
+			filePattern="D://logs//$${date:yyyy-MM}//info2-%d{yyyy-MM-dd}-%i.log">
+
+			<!--控制台只输出level及以上级别的信息（onMatch），其他的直接拒绝（onMismatch） -->
+			<ThresholdFilter level="debug" onMatch="ACCEPT"
+				onMismatch="DENY" />
+
+			<PatternLayout pattern="${sys:FILE_LOG_PATTERN}" />
+
+			<Policies>
+
+				<TimeBasedTriggeringPolicy />
+
+				<SizeBasedTriggeringPolicy size="100 MB" />
+
+			</Policies>
+
+		</RollingFile>
+	</Appenders>
+	<Loggers>
+	<!-- 级别依次为【从高到低】：FATAL > ERROR > WARN > INFO > DEBUG > TRACE  FEWIDT -->
+		<logger name="cn.com.studyshop" level="debug">
+		</logger>
+		<Root level="Debug"><!--root层级-->
+			<AppenderRef ref="Console" /> <!--全局拦截器 会拦截上边logger配置的输出-->
+			<AppenderRef ref="RollingFileInfo" /><!--全局拦截器 会拦截上边logger配置的输出-->
+		</Root>
+	</Loggers>
+</Configuration>
